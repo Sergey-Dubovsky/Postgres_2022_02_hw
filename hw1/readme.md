@@ -1,8 +1,8 @@
-1. Уcтановил локальную виртуалку с Ubuntu LTS 20.04.04 
-1. Зарегался в GCP 
-2. В локальную виртуалку поставил gcloud и авторизовался в нем через браузер
+1. РЈcС‚Р°РЅРѕРІРёР» Р»РѕРєР°Р»СЊРЅСѓСЋ РІРёСЂС‚СѓР°Р»РєСѓ СЃ Ubuntu LTS 20.04.04 
+1. Р—Р°СЂРµРіР°Р»СЃСЏ РІ GCP 
+2. Р’ Р»РѕРєР°Р»СЊРЅСѓСЋ РІРёСЂС‚СѓР°Р»РєСѓ РїРѕСЃС‚Р°РІРёР» gcloud Рё Р°РІС‚РѕСЂРёР·РѕРІР°Р»СЃСЏ РІ РЅРµРј С‡РµСЂРµР· Р±СЂР°СѓР·РµСЂ
 
-[инструкция по установке gcloud](https://geekflare.com/gcloud-installation-guide/#anchor-debian-ubuntu)
+[РёРЅСЃС‚СЂСѓРєС†РёСЏ РїРѕ СѓСЃС‚Р°РЅРѕРІРєРµ gcloud](https://geekflare.com/gcloud-installation-guide/#anchor-debian-ubuntu)
 
 ```bash
 echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
@@ -19,8 +19,8 @@ sudo apt-get install google-cloud-sdk-app-engine-java
 gcloud init
 ```
 
-4. Создал проект postgres2022-19730918, добавил  ifti@yandex.ru с ролью Project Editor 
-5. Включил Compute Engine API, создал инстанс
+4. РЎРѕР·РґР°Р» РїСЂРѕРµРєС‚ postgres2022-19730918, РґРѕР±Р°РІРёР»  ifti@yandex.ru СЃ СЂРѕР»СЊСЋ Project Editor 
+5. Р’РєР»СЋС‡РёР» Compute Engine API, СЃРѕР·РґР°Р» РёРЅСЃС‚Р°РЅСЃ
 
 2 vCPU 4 Mb RAM
 Name    postgresql-1
@@ -31,40 +31,40 @@ ImageUbuntu 20.04 LTS
 ```
 gcloud compute instances create postgresql-1 --project=postgres2022-19730918 --zone=europe-north1-a --machine-type=e2-medium --network-interface=network-tier=PREMIUM,subnet=default --maintenance-policy=MIGRATE --service-account=566999235043-compute@developer.gserviceaccount.com --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --create-disk=auto-delete=yes,boot=yes,device-name=postgresql-1,image=projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20220303a,mode=rw,size=10,type=projects/postgres2022-19730918/zones/europe-north1-a/diskTypes/pd-ssd --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
 ```
-6. Проверил список инстансов , старт-стоп
+6. РџСЂРѕРІРµСЂРёР» СЃРїРёСЃРѕРє РёРЅСЃС‚Р°РЅСЃРѕРІ , СЃС‚Р°СЂС‚-СЃС‚РѕРї
 ```
 gcloud compute instances list
 gcloud compute instances stop postgresql-1
 gcloud compute instances start postgresql-1
 ```
 
-7. В локальной виртуалке создал SSH ключ, и загрузил в GCS
+7. Р’ Р»РѕРєР°Р»СЊРЅРѕР№ РІРёСЂС‚СѓР°Р»РєРµ СЃРѕР·РґР°Р» SSH РєР»СЋС‡, Рё Р·Р°РіСЂСѓР·РёР» РІ GCS
 
 ```
 ssh-keygen -t rsa
 cat .ssh/id_rsa.pub
--- загрузил в GoogleCloud
+-- Р·Р°РіСЂСѓР·РёР» РІ GoogleCloud
 
 eval `ssh-agent -s`
 ssh-add .ssh/id_rsa
 ```
-8. Подключился к вируталке
+8. РџРѕРґРєР»СЋС‡РёР»СЃСЏ Рє РІРёСЂСѓС‚Р°Р»РєРµ
 ```
 ssh serg@35.228.91.58
 ```
-9. Установил postgres
+9. РЈСЃС‚Р°РЅРѕРІРёР» postgres
 ```
 sudo apt update && sudo apt upgrade -y && sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - && sudo apt-get update && sudo apt-get -y install postgresql-14
 ```
 
-10. в другой вкладке подключился еще раз в инстансу
+10. РІ РґСЂСѓРіРѕР№ РІРєР»Р°РґРєРµ РїРѕРґРєР»СЋС‡РёР»СЃСЏ РµС‰Рµ СЂР°Р· РІ РёРЅСЃС‚Р°РЅСЃСѓ
 
-11. в обеих сессиях запустил psql из под юзера postgres
+11. РІ РѕР±РµРёС… СЃРµСЃСЃРёСЏС… Р·Р°РїСѓСЃС‚РёР» psql РёР· РїРѕРґ СЋР·РµСЂР° postgres
 ```
 sudo -u postgres psql
 ```
 
-12. отключаем Autocommit и создаем тестовую таблицу
+12. РѕС‚РєР»СЋС‡Р°РµРј Autocommit Рё СЃРѕР·РґР°РµРј С‚РµСЃС‚РѕРІСѓСЋ С‚Р°Р±Р»РёС†Сѓ
 ```
 \set AUTOCOMMIT off
 postgres=# create table persons(id serial, first_name text, second_name text); insert into persons(first_name, second_name) values('ivan', 'ivanov'); insert into persons(first_name, second_name) values('petr', 'petrov'); commit;
@@ -82,7 +82,7 @@ postgres=# select * from persons;commit;
 COMMIT
 
 ```
-13. В 1й сессии проверяем уровень изоляции - read commited
+13. Р’ 1Р№ СЃРµСЃСЃРёРё РїСЂРѕРІРµСЂСЏРµРј СѓСЂРѕРІРµРЅСЊ РёР·РѕР»СЏС†РёРё - read commited
 ```
 postgres=# show transaction isolation level;
  transaction_isolation 
@@ -96,7 +96,7 @@ postgres=*# insert into persons(first_name, second_name) values('sergey', 'serge
 INSERT 0 1
 postgres=*# 
 ```
-во 2й сессии
+РІРѕ 2Р№ СЃРµСЃСЃРёРё
 ```
 postgres=# select * from persons;commit;
  id | first_name | second_name 
@@ -107,12 +107,12 @@ postgres=# select * from persons;commit;
 
 COMMIT
 ```
-В 1й сессии
+Р’ 1Р№ СЃРµСЃСЃРёРё
 ```
 postgres=*# commit;
 COMMIT
 ```
-во 2й сессии
+РІРѕ 2Р№ СЃРµСЃСЃРёРё
 ```
 postgres=# select * from persons;commit;
  id | first_name | second_name 
@@ -124,9 +124,9 @@ postgres=# select * from persons;commit;
 
 COMMIT
 ```
-Пока транзакция в первой сессии не завершена, добавленные данные не видны во второй сессии
+РџРѕРєР° С‚СЂР°РЅР·Р°РєС†РёСЏ РІ РїРµСЂРІРѕР№ СЃРµСЃСЃРёРё РЅРµ Р·Р°РІРµСЂС€РµРЅР°, РґРѕР±Р°РІР»РµРЅРЅС‹Рµ РґР°РЅРЅС‹Рµ РЅРµ РІРёРґРЅС‹ РІРѕ РІС‚РѕСЂРѕР№ СЃРµСЃСЃРёРё
 
-14. В 1й сессии начинем транзакцию repeatable read и добавляем запись
+14. Р’ 1Р№ СЃРµСЃСЃРёРё РЅР°С‡РёРЅРµРј С‚СЂР°РЅР·Р°РєС†РёСЋ repeatable read Рё РґРѕР±Р°РІР»СЏРµРј Р·Р°РїРёСЃСЊ
 ```
 postgres=# begin transaction isolation level repeatable read;
 BEGIN
@@ -136,7 +136,7 @@ postgres=*# commit;
 COMMIT
 ```
 
-во 2й сессии
+РІРѕ 2Р№ СЃРµСЃСЃРёРё
 ```
 postgres=# begin transaction isolation level repeatable read;
 BEGIN
@@ -172,5 +172,5 @@ postgres=*# select * from persons;
 postgres=*# commit;
 COMMIT
 ```
-Во второй сессии добавленная запись становится видна толко после завершени транзакции в первой и во второй сессии. То есть пока транзакция во второй сессии, начатая до добавлени данных, не будет завершена, во второй сессии не цдастся увидеть добавленную запись.
+Р’Рѕ РІС‚РѕСЂРѕР№ СЃРµСЃСЃРёРё РґРѕР±Р°РІР»РµРЅРЅР°СЏ Р·Р°РїРёСЃСЊ СЃС‚Р°РЅРѕРІРёС‚СЃСЏ РІРёРґРЅР° С‚РѕР»РєРѕ РїРѕСЃР»Рµ Р·Р°РІРµСЂС€РµРЅРё С‚СЂР°РЅР·Р°РєС†РёРё РІ РїРµСЂРІРѕР№ Рё РІРѕ РІС‚РѕСЂРѕР№ СЃРµСЃСЃРёРё. РўРѕ РµСЃС‚СЊ РїРѕРєР° С‚СЂР°РЅР·Р°РєС†РёСЏ РІРѕ РІС‚РѕСЂРѕР№ СЃРµСЃСЃРёРё, РЅР°С‡Р°С‚Р°СЏ РґРѕ РґРѕР±Р°РІР»РµРЅРё РґР°РЅРЅС‹С…, РЅРµ Р±СѓРґРµС‚ Р·Р°РІРµСЂС€РµРЅР°, РІРѕ РІС‚РѕСЂРѕР№ СЃРµСЃСЃРёРё РЅРµ С†РґР°СЃС‚СЃСЏ СѓРІРёРґРµС‚СЊ РґРѕР±Р°РІР»РµРЅРЅСѓСЋ Р·Р°РїРёСЃСЊ.
 
